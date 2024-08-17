@@ -60,6 +60,7 @@ const MyForm = () => {
   });
 
   const handleSubmit = (values) => {
+    console.log('Form submitted', values);
     axios
       .post('/api/states', values)
       .then((response) => {

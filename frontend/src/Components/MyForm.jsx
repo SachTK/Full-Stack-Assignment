@@ -5,6 +5,18 @@ import React, { useState } from "react";
 const MyForm2 = () => {
   const [cities, setCities] = useState([{ id: 0, thresholds: [{}], pickupThresholds: [{}] }]);
 
+  const handleThresholdChange = (cityIndex, thresholdIndex, type, value) => {
+    const updatedCities = [...cities];
+    updatedCities[cityIndex].thresholds[thresholdIndex][type] = value;
+    setCities(updatedCities);
+  };
+
+  const handlePickupThresholdChange = (cityIndex, thresholdIndex, type, value) => {
+    const updatedCities = [...cities];
+    updatedCities[cityIndex].pickupThresholds[thresholdIndex][type] = value;
+    setCities(updatedCities);
+  };
+
   const addThreshold = (cityIndex, event) => {
     event.preventDefault();
     const updatedCities = [...cities];
@@ -12,10 +24,24 @@ const MyForm2 = () => {
     setCities(updatedCities);
   };
 
+  const removeThreshold = (cityIndex, thresholdIndex, event) => {
+    event.preventDefault();
+    const updatedCities = [...cities];
+    updatedCities[cityIndex].thresholds.splice(thresholdIndex, 1);
+    setCities(updatedCities);
+  };
+
   const addPickupThreshold = (cityIndex, event) => {
     event.preventDefault();
     const updatedCities = [...cities];
     updatedCities[cityIndex].pickupThresholds.push({});
+    setCities(updatedCities);
+  };
+
+  const removePickupThreshold = (cityIndex, thresholdIndex, event) => {
+    event.preventDefault();
+    const updatedCities = [...cities];
+    updatedCities[cityIndex].pickupThresholds.splice(thresholdIndex, 1);
     setCities(updatedCities);
   };
 
@@ -137,7 +163,7 @@ const MyForm2 = () => {
                   id="deliveryCosts"
                   className="p-4 mb-4 delivery-bg rounded"
                 >
-                  {city.thresholds.map((_, thresholdIndex) => (
+                  {city.thresholds.map((threshold, thresholdIndex) => (
                     <div className="threshold mb-4" key={thresholdIndex}>
                       <label
                         htmlFor={`thresholdAmount-${cityIndex}-${thresholdIndex}`}
@@ -149,6 +175,15 @@ const MyForm2 = () => {
                         type="number"
                         id={`thresholdAmount-${cityIndex}-${thresholdIndex}`}
                         name={`cities[${cityIndex}][suburbs][0][delivery_costs][fixed][thresholds][${thresholdIndex}][amount]`}
+                        value={threshold.amount || ''}
+                        onChange={(e) =>
+                          handleThresholdChange(
+                            cityIndex,
+                            thresholdIndex,
+                            "amount",
+                            e.target.value
+                          )
+                        }
                         required
                         className="border border-gray-300 p-2 w-full mb-2 rounded"
                       />
@@ -163,9 +198,25 @@ const MyForm2 = () => {
                         step="0.01"
                         id={`costBelowThreshold-${cityIndex}-${thresholdIndex}`}
                         name={`cities[${cityIndex}][suburbs][0][delivery_costs][fixed][thresholds][${thresholdIndex}][cost]`}
+                        value={threshold.cost || ''}
+                        onChange={(e) =>
+                          handleThresholdChange(
+                            cityIndex,
+                            thresholdIndex,
+                            "cost",
+                            e.target.value
+                          )
+                        }
                         required
                         className="border border-gray-300 p-2 w-full mb-4 rounded"
                       />
+                      <button
+                        type="button"
+                        onClick={(e) => removeThreshold(cityIndex, thresholdIndex, e)}
+                        className="text-red-500"
+                      >
+                        Remove Threshold
+                      </button>
                     </div>
                   ))}
                   <button
@@ -194,7 +245,7 @@ const MyForm2 = () => {
                   Pickup Options
                 </h4>
                 <div id="pickupOptions" className="p-4 mb-4 pickup-bg rounded">
-                  {city.pickupThresholds.map((_, thresholdIndex) => (
+                  {city.pickupThresholds.map((threshold, thresholdIndex) => (
                     <div className="threshold mb-4" key={thresholdIndex}>
                       <label
                         htmlFor={`pickupThresholdAmount-${cityIndex}-${thresholdIndex}`}
@@ -206,6 +257,15 @@ const MyForm2 = () => {
                         type="number"
                         id={`pickupThresholdAmount-${cityIndex}-${thresholdIndex}`}
                         name={`cities[${cityIndex}][suburbs][0][pickup_options][thresholds][${thresholdIndex}][amount]`}
+                        value={threshold.amount || ''}
+                        onChange={(e) =>
+                          handlePickupThresholdChange(
+                            cityIndex,
+                            thresholdIndex,
+                            "amount",
+                            e.target.value
+                          )
+                        }
                         required
                         className="border border-gray-300 p-2 w-full mb-2 rounded"
                       />
@@ -220,9 +280,25 @@ const MyForm2 = () => {
                         step="0.01"
                         id={`pickupCostBelowThreshold-${cityIndex}-${thresholdIndex}`}
                         name={`cities[${cityIndex}][suburbs][0][pickup_options][thresholds][${thresholdIndex}][cost]`}
+                        value={threshold.cost || ''}
+                        onChange={(e) =>
+                          handlePickupThresholdChange(
+                            cityIndex,
+                            thresholdIndex,
+                            "cost",
+                            e.target.value
+                          )
+                        }
                         required
                         className="border border-gray-300 p-2 w-full mb-4 rounded"
                       />
+                      <button
+                        type="button"
+                        onClick={(e) => removePickupThreshold(cityIndex, thresholdIndex, e)}
+                        className="text-red-500"
+                      >
+                        Remove Threshold
+                      </button>
                     </div>
                   ))}
                   <button
