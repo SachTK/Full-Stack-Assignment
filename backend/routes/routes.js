@@ -14,4 +14,9 @@ router.put('/states/:id', stateController.updateState);
 // Route to delete a state entry
 router.delete('/states/:id', stateController.deleteState);
 
+// Route to get all delivery costs
+router.get('/delivery-costs', stateController.getAllDeliveryCosts);
+
+
+
 module.exports = router;

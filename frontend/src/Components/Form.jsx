@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Formik, Field, Form, FieldArray } from 'formik';
+import { Formik, Field, Form, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
@@ -43,38 +43,19 @@ const MyForm = () => {
         suburbs: Yup.array().of(
           Yup.object({
             suburbName: Yup.string().required('Suburb name is required'),
+
             postalCodes: Yup.object({
               type: Yup.string().required('Postal code type is required'),
               ranges: Yup.array().of(
                 Yup.object({
-                  start: Yup.string().required('Start range is required'),
-                  end: Yup.string().required('End range is required'),
+                  start: Yup.string(),
+                  end: Yup.string(),
                 })
               ),
-              list: Yup.array().of(Yup.string().required('Postal code is required')),
+              list: Yup.array().of(Yup.string()),
               single: Yup.string(),
-            }).test('is-valid-postal-code', 'Invalid postal code data', function (value) {
-              const { type, ranges, list, single } = value || {};
-              if (type === 'range' && (!ranges || ranges.length === 0)) {
-                return this.createError({
-                  path: `${this.path}.ranges`,
-                  message: 'At least one range is required',
-                });
-              }
-              if (type === 'list' && (!list || list.length === 0)) {
-                return this.createError({
-                  path: `${this.path}.list`,
-                  message: 'At least one postal code is required',
-                });
-              }
-              if (type === 'single' && !single) {
-                return this.createError({
-                  path: `${this.path}.single`,
-                  message: 'Postal code is required',
-                });
-              }
-              return true;
             }),
+
             delivery_costs: Yup.object({
               thresholds: Yup.array().of(
                 Yup.object({
@@ -98,13 +79,11 @@ const MyForm = () => {
       })
     ),
   });
-  
-
 
   const handleSubmit = (values) => {
     console.log('Form submitted', values);
     axios
-      .post('http://localhost:3001/api/states', values)  
+      .post('http://localhost:3001/api/states', values)
       .then((response) => {
         console.log('Form submitted successfully', response.data);
       })
@@ -112,7 +91,6 @@ const MyForm = () => {
         console.error('Error submitting form', error);
       });
   };
-  
 
   return (
     <div className="container mx-auto p-4">
@@ -133,6 +111,11 @@ const MyForm = () => {
                 type="text"
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
               />
+              <ErrorMessage
+                name="stateName"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
             </div>
 
             <FieldArray name="cities">
@@ -152,6 +135,11 @@ const MyForm = () => {
                           name={`cities.${cityIndex}.cityName`}
                           type="text"
                           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                        />
+                        <ErrorMessage
+                          name={`cities.${cityIndex}.cityName`}
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
                         />
                       </div>
 
@@ -175,6 +163,11 @@ const MyForm = () => {
                                     type="text"
                                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                   />
+                                  <ErrorMessage
+                                    name={`cities.${cityIndex}.suburbs.${suburbIndex}.suburbName`}
+                                    component="div"
+                                    className="text-red-500 text-sm mt-1"
+                                  />
                                 </div>
 
                                 <div className="mb-4">
@@ -194,6 +187,11 @@ const MyForm = () => {
                                     <option value="range">Range</option>
                                     <option value="list">List</option>
                                   </Field>
+                                  <ErrorMessage
+                                    name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.type`}
+                                    component="div"
+                                    className="text-red-500 text-sm mt-1"
+                                  />
                                 </div>
 
                                 {values.cities[cityIndex].suburbs[suburbIndex].postalCodes.type ===
@@ -209,6 +207,11 @@ const MyForm = () => {
                                       name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.single`}
                                       type="text"
                                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    />
+                                    <ErrorMessage
+                                      name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.single`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
                                     />
                                   </div>
                                 )}
@@ -231,11 +234,21 @@ const MyForm = () => {
                                                 placeholder="Start Range"
                                                 className="p-2 border border-gray-300 rounded-md"
                                               />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.start`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
+                                              />
                                               <Field
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
                                                 type="text"
                                                 placeholder="End Range"
                                                 className="p-2 border border-gray-300 rounded-md"
+                                              />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
                                               />
                                               <button
                                                 type="button"
@@ -277,6 +290,11 @@ const MyForm = () => {
                                                 placeholder="Postal Code"
                                                 className="p-2 border border-gray-300 rounded-md"
                                               />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list.${postalCodeIndex}`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
+                                              />
                                               <button
                                                 type="button"
                                                 className="text-red-500"
@@ -315,11 +333,21 @@ const MyForm = () => {
                                                 placeholder="Order Value"
                                                 className="p-2 border border-gray-300 rounded-md"
                                               />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.orderValue`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
+                                              />
                                               <Field
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.cost`}
                                                 type="number"
                                                 placeholder="Cost"
                                                 className="p-2 border border-gray-300 rounded-md"
+                                              />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.cost`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
                                               />
                                               <button
                                                 type="button"
@@ -357,6 +385,11 @@ const MyForm = () => {
                                     type="number"
                                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                   />
+                                  <ErrorMessage
+                                    name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.above_threshold`}
+                                    component="div"
+                                    className="text-red-500 text-sm mt-1"
+                                  />
                                 </div>
 
                                 <h5 className="font-semibold">Pickup Options</h5>
@@ -375,11 +408,21 @@ const MyForm = () => {
                                                 placeholder="Order Value"
                                                 className="p-2 border border-gray-300 rounded-md"
                                               />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.orderValue`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
+                                              />
                                               <Field
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.cost`}
                                                 type="number"
                                                 placeholder="Cost"
                                                 className="p-2 border border-gray-300 rounded-md"
+                                              />
+                                              <ErrorMessage
+                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.cost`}
+                                                component="div"
+                                                className="text-red-500 text-sm mt-1"
                                               />
                                               <button
                                                 type="button"
@@ -416,6 +459,11 @@ const MyForm = () => {
                                     name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.above_threshold`}
                                     type="number"
                                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                  />
+                                  <ErrorMessage
+                                    name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.above_threshold`}
+                                    component="div"
+                                    className="text-red-500 text-sm mt-1"
                                   />
                                 </div>
 

@@ -43,3 +43,15 @@ exports.deleteState = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+
+// Get all delivery costs
+exports.getAllDeliveryCosts = async (req, res) => {
+  try {
+    const deliveryCosts = await State.find().lean();
+    res.json(deliveryCosts);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
