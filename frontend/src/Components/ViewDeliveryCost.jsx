@@ -15,18 +15,17 @@ const DeliveryCostTabel = () => {
   useEffect(() => {
     const fetchDeliveryCosts = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3001/api/delivery-costs"
-        );
+        const response = await axios.get("/api/delivery-costs");
         setDeliveryCosts(response.data);
         setFilteredDeliveryCosts(response.data);
       } catch (err) {
         setError("Could not retrieve delivery costs. Please try again.");
       }
     };
-
+  
     fetchDeliveryCosts();
   }, []);
+  
 
   const handleSearch = () => {
     setError(null);
@@ -81,7 +80,7 @@ const DeliveryCostTabel = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 px-[20px] lg:px-[60px]">
       <h1 className="text-2xl font-bold mb-4">
         Search Delivery Cost by Postal Code
       </h1>
@@ -110,12 +109,24 @@ const DeliveryCostTabel = () => {
         <table className="min-w-full bg-white border border-gray-300 mt-4">
           <thead>
             <tr>
-              <th className="px-4 py-2 border-b">State Name</th>
-              <th className="px-4 py-2 border-b">City Name</th>
-              <th className="px-4 py-2 border-b">Suburb Name</th>
-              <th className="px-4 py-2 border-b">Postal Code</th>
-              <th className="px-4 py-2 border-b">Order Value</th>
-              <th className="px-4 py-2 border-b">Delivery Cost</th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                Postal Code
+              </th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                Suburb Name
+              </th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                City Name
+              </th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                State Name
+              </th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                Order Value
+              </th>
+              <th className="px-4 py-2 border-b  bg-[#F0E4F2] text-start">
+                Delivery Cost
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -123,22 +134,22 @@ const DeliveryCostTabel = () => {
               state.cities.map((city, cityIndex) =>
                 city.suburbs.map((suburb, suburbIndex) => (
                   <tr key={`${stateIndex}-${cityIndex}-${suburbIndex}`}>
-                    <td className="px-4 py-2 border-b text-center">
-                      {state.stateName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-center">
-                      {city.cityName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-center">
-                      {suburb.suburbName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-center">
+                    <td className="px-4 py-2 border-b text-start">
                       {renderPostalCodes(suburb.postalCodes)}
                     </td>
-                    <td className="px-4 py-2 border-b text-center">
+                    <td className="px-4 py-2 border-b text-start">
+                      {suburb.suburbName}
+                    </td>
+                    <td className="px-4 py-2 border-b text-start">
+                      {city.cityName}
+                    </td>
+                    <td className="px-4 py-2 border-b text-start">
+                      {state.stateName}
+                    </td>
+                    <td className="px-4 py-2 border-b text-start">
                       {suburb.delivery_costs.thresholds[0]?.orderValue} $
                     </td>
-                    <td className="px-4 py-2 border-b text-center">
+                    <td className="px-4 py-2 border-b text-start">
                       {suburb.delivery_costs.thresholds[0]?.cost} $
                     </td>
                   </tr>
@@ -148,12 +159,13 @@ const DeliveryCostTabel = () => {
           </tbody>
         </table>
       </div>
-      <Link href="/" className="flex gap-[8px] items-center mt-[10px] text-[#612F69] text-[18px]">
-
-      <IoMdArrowRoundBack className=" cursor-pointer"/>
-      <p >Home</p>
+      <Link
+        href="/"
+        className="flex gap-[8px] items-center mt-[10px] text-[#612F69] text-[18px]"
+      >
+        <IoMdArrowRoundBack className=" cursor-pointer" />
+        <p>Home</p>
       </Link>
-       
     </div>
   );
 };

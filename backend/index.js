@@ -1,32 +1,9 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const mongoString = 'mongodb+srv://sachini:8rlBs2wEGl8bDRHw@assignment.fbj1m.mongodb.net/'
-// const routes = require('./routes/routes');
-// app.use('/api', routes);
-
-// mongoose.connect(mongoString);
-// const database = mongoose.connection;
-
-// database.on('error', (error) => {
-//     console.log(error)
-// })
-
-// database.once('connected', () => {
-//     console.log('Database Connected');
-// })
-// const app = express();
-
-// app.use(express.json());
-
-// app.listen(3002, () => {
-//     console.log(`Server Started at ${3002}`)
-// })
-
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');  
-const stateRoutes = require('./routes/routes'); 
+require('dotenv').config();
+import express from 'express';
+import { connect } from 'mongoose';
+import { json } from 'body-parser';
+import cors from 'cors';
+import stateRoutes from './routes/stateRoutes'; 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,10 +11,11 @@ const PORT = process.env.PORT || 3001;
 // Enable CORS for all routes
 app.use(cors());
 
-app.use(bodyParser.json());
+app.use(json());
 
-mongoose.connect('mongodb+srv://sachini:8rlBs2wEGl8bDRHw@assignment.fbj1m.mongodb.net/', {
-  // Connect to MongoDB
+connect(process.env.MONGODB_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true
 })
   .then(() => {
     console.log('Connected to MongoDB successfully');
@@ -49,5 +27,4 @@ mongoose.connect('mongodb+srv://sachini:8rlBs2wEGl8bDRHw@assignment.fbj1m.mongod
     console.error('Error connecting to MongoDB:', error.message);
   });
 
-app.use('/api', stateRoutes); 
-
+app.use('/api', stateRoutes);

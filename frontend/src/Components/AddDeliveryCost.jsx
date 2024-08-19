@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Formik, Field, Form, FieldArray, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import Button from './Button';
+import React from "react";
+import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import Button from "./Button";
 
 const DeliveryCostForm = () => {
   const initialValues = {
-    stateName: '',
+    stateName: "",
     cities: [
       {
-        cityName: '',
+        cityName: "",
         suburbs: [
           {
-            suburbName: '',
-            state: '',
+            suburbName: "",
+            state: "",
             postalCodes: {
-              type: '',
-              ranges: [{ start: '', end: '' }],
+              type: "",
+              ranges: [{ start: "", end: "" }],
               list: [],
-              single: '',
+              single: "",
             },
             delivery_costs: {
-              thresholds: [{ orderValue: '', cost: '' }],
-              above_threshold: '',
+              thresholds: [{ orderValue: "", cost: "" }],
+              above_threshold: "",
             },
             pickup_options: {
-              thresholds: [{ orderValue: '', cost: '' }],
-              above_threshold: '',
+              thresholds: [{ orderValue: "", cost: "" }],
+              above_threshold: "",
             },
           },
         ],
@@ -37,16 +37,16 @@ const DeliveryCostForm = () => {
   };
 
   const validationSchema = Yup.object({
-    stateName: Yup.string().required('State name is required'),
+    stateName: Yup.string().required("State name is required"),
     cities: Yup.array().of(
       Yup.object({
-        cityName: Yup.string().required('City name is required'),
+        cityName: Yup.string().required("City name is required"),
         suburbs: Yup.array().of(
           Yup.object({
-            suburbName: Yup.string().required('Suburb name is required'),
+            suburbName: Yup.string().required("Suburb name is required"),
 
             postalCodes: Yup.object({
-              type: Yup.string().required('Postal code type is required'),
+              type: Yup.string().required("Postal code type is required"),
               ranges: Yup.array().of(
                 Yup.object({
                   start: Yup.string(),
@@ -60,20 +60,24 @@ const DeliveryCostForm = () => {
             delivery_costs: Yup.object({
               thresholds: Yup.array().of(
                 Yup.object({
-                  orderValue: Yup.number().required('Order value is required'),
-                  cost: Yup.number().required('Cost is required'),
+                  orderValue: Yup.number().required("Order value is required"),
+                  cost: Yup.number().required("Cost is required"),
                 })
               ),
-              above_threshold: Yup.number().required('Above threshold cost is required'),
+              above_threshold: Yup.number().required(
+                "Above threshold cost is required"
+              ),
             }),
             pickup_options: Yup.object({
               thresholds: Yup.array().of(
                 Yup.object({
-                  orderValue: Yup.number().required('Order value is required'),
-                  cost: Yup.number().required('Cost is required'),
+                  orderValue: Yup.number().required("Order value is required"),
+                  cost: Yup.number().required("Cost is required"),
                 })
               ),
-              above_threshold: Yup.number().required('Above threshold cost is required'),
+              above_threshold: Yup.number().required(
+                "Above threshold cost is required"
+              ),
             }),
           })
         ),
@@ -81,7 +85,7 @@ const DeliveryCostForm = () => {
     ),
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values, { resetForm }) => {
     const cleanedValues = {
       ...values,
       cities: values.cities.map((city) => ({
@@ -90,15 +94,15 @@ const DeliveryCostForm = () => {
           const cleanedPostalCodes = {
             type: suburb.postalCodes.type,
           };
-
-          if (suburb.postalCodes.type === 'single') {
+  
+          if (suburb.postalCodes.type === "single") {
             cleanedPostalCodes.single = suburb.postalCodes.single;
-          } else if (suburb.postalCodes.type === 'range') {
+          } else if (suburb.postalCodes.type === "range") {
             cleanedPostalCodes.ranges = suburb.postalCodes.ranges;
-          } else if (suburb.postalCodes.type === 'list') {
+          } else if (suburb.postalCodes.type === "list") {
             cleanedPostalCodes.list = suburb.postalCodes.list;
           }
-
+  
           return {
             ...suburb,
             postalCodes: cleanedPostalCodes,
@@ -106,14 +110,16 @@ const DeliveryCostForm = () => {
         }),
       })),
     };
-
+  
     axios
-      .post('http://localhost:3001/api/states', cleanedValues)
+      .post("/api/states", cleanedValues)
       .then((response) => {
-        console.log('Form submitted successfully', response.data);
+        // console.log("Form submitted successfully", response.data);
+        alert("Form submitted successfully!");
+        resetForm(); 
       })
       .catch((error) => {
-        console.error('Error submitting form', error);
+        console.error("Error submitting form", error);
       });
   };
 
@@ -128,7 +134,10 @@ const DeliveryCostForm = () => {
         {({ values }) => (
           <Form>
             <div className="mb-4">
-              <label htmlFor="stateName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="stateName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 State Name
               </label>
               <Field
@@ -148,7 +157,9 @@ const DeliveryCostForm = () => {
                 <div>
                   {values.cities.map((city, cityIndex) => (
                     <div key={cityIndex} className="mb-6">
-                      <h3 className="text-lg font-bold mb-2">City {cityIndex + 1}</h3>
+                      <h3 className="text-lg font-bold mb-2">
+                        City {cityIndex + 1}
+                      </h3>
                       <div className="mb-4">
                         <label
                           htmlFor={`cities.${cityIndex}.cityName`}
@@ -219,8 +230,8 @@ const DeliveryCostForm = () => {
                                   />
                                 </div>
 
-                                {values.cities[cityIndex].suburbs[suburbIndex].postalCodes.type ===
-                                  'single' && (
+                                {values.cities[cityIndex].suburbs[suburbIndex]
+                                  .postalCodes.type === "single" && (
                                   <div className="mb-4">
                                     <label
                                       htmlFor={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.single`}
@@ -241,8 +252,8 @@ const DeliveryCostForm = () => {
                                   </div>
                                 )}
 
-                                {values.cities[cityIndex].suburbs[suburbIndex].postalCodes.type ===
-                                  'range' && (
+                                {values.cities[cityIndex].suburbs[suburbIndex]
+                                  .postalCodes.type === "range" && (
                                   <FieldArray
                                     name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges`}
                                   >
@@ -250,45 +261,54 @@ const DeliveryCostForm = () => {
                                       <div>
                                         {values.cities[cityIndex].suburbs[
                                           suburbIndex
-                                        ].postalCodes.ranges.map((range, rangeIndex) => (
-                                          <div key={rangeIndex} className="mb-2">
-                                            <div className="flex space-x-2">
-                                              <Field
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.start`}
-                                                type="text"
-                                                placeholder="Start Range"
-                                                className="p-2 border border-gray-300 rounded-md"
-                                              />
-                                              <ErrorMessage
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.start`}
-                                                component="div"
-                                                className="text-red-500 text-sm mt-1"
-                                              />
-                                              <Field
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
-                                                type="text"
-                                                placeholder="End Range"
-                                                className="p-2 border border-gray-300 rounded-md"
-                                              />
-                                              <ErrorMessage
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
-                                                component="div"
-                                                className="text-red-500 text-sm mt-1"
-                                              />
-                                              <button
-                                                type="button"
-                                                className="text-red-500"
-                                                onClick={() => remove(rangeIndex)}
-                                              >
-                                                X
-                                              </button>
+                                        ].postalCodes.ranges.map(
+                                          (range, rangeIndex) => (
+                                            <div
+                                              key={rangeIndex}
+                                              className="mb-2"
+                                            >
+                                              <div className="flex space-x-2">
+                                                <Field
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.start`}
+                                                  type="text"
+                                                  placeholder="Start Range"
+                                                  className="p-2 border border-gray-300 rounded-md"
+                                                />
+                                                <ErrorMessage
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.start`}
+                                                  component="div"
+                                                  className="text-red-500 text-sm mt-1"
+                                                />
+                                                <Field
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
+                                                  type="text"
+                                                  placeholder="End Range"
+                                                  className="p-2 border border-gray-300 rounded-md"
+                                                />
+                                                <ErrorMessage
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.ranges.${rangeIndex}.end`}
+                                                  component="div"
+                                                  className="text-red-500 text-sm mt-1"
+                                                />
+                                                <button
+                                                  type="button"
+                                                  className="text-red-500"
+                                                  onClick={() =>
+                                                    remove(rangeIndex)
+                                                  }
+                                                >
+                                                  X
+                                                </button>
+                                              </div>
                                             </div>
-                                          </div>
-                                        ))}
+                                          )
+                                        )}
                                         <button
                                           type="button"
                                           className="text-blue-500"
-                                          onClick={() => push({ start: '', end: '' })}
+                                          onClick={() =>
+                                            push({ start: "", end: "" })
+                                          }
                                         >
                                           Add Range
                                         </button>
@@ -297,8 +317,8 @@ const DeliveryCostForm = () => {
                                   </FieldArray>
                                 )}
 
-                                {values.cities[cityIndex].suburbs[suburbIndex].postalCodes.type ===
-                                  'list' && (
+                                {values.cities[cityIndex].suburbs[suburbIndex]
+                                  .postalCodes.type === "list" && (
                                   <FieldArray
                                     name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list`}
                                   >
@@ -306,34 +326,41 @@ const DeliveryCostForm = () => {
                                       <div>
                                         {values.cities[cityIndex].suburbs[
                                           suburbIndex
-                                        ].postalCodes.list.map((postalCode, postalCodeIndex) => (
-                                          <div key={postalCodeIndex} className="mb-2">
-                                            <div className="flex space-x-2">
-                                              <Field
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list.${postalCodeIndex}`}
-                                                type="text"
-                                                placeholder="Postal Code"
-                                                className="p-2 border border-gray-300 rounded-md"
-                                              />
-                                              <ErrorMessage
-                                                name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list.${postalCodeIndex}`}
-                                                component="div"
-                                                className="text-red-500 text-sm mt-1"
-                                              />
-                                              <button
-                                                type="button"
-                                                className="text-red-500"
-                                                onClick={() => remove(postalCodeIndex)}
-                                              >
-                                                X
-                                              </button>
+                                        ].postalCodes.list.map(
+                                          (postalCode, postalCodeIndex) => (
+                                            <div
+                                              key={postalCodeIndex}
+                                              className="mb-2"
+                                            >
+                                              <div className="flex space-x-2">
+                                                <Field
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list.${postalCodeIndex}`}
+                                                  type="text"
+                                                  placeholder="Postal Code"
+                                                  className="p-2 border border-gray-300 rounded-md"
+                                                />
+                                                <ErrorMessage
+                                                  name={`cities.${cityIndex}.suburbs.${suburbIndex}.postalCodes.list.${postalCodeIndex}`}
+                                                  component="div"
+                                                  className="text-red-500 text-sm mt-1"
+                                                />
+                                                <button
+                                                  type="button"
+                                                  className="text-red-500"
+                                                  onClick={() =>
+                                                    remove(postalCodeIndex)
+                                                  }
+                                                >
+                                                  X
+                                                </button>
+                                              </div>
                                             </div>
-                                          </div>
-                                        ))}
+                                          )
+                                        )}
                                         <button
                                           type="button"
                                           className="text-blue-500"
-                                          onClick={() => push('')}
+                                          onClick={() => push("")}
                                         >
                                           Add Postal Code
                                         </button>
@@ -342,7 +369,9 @@ const DeliveryCostForm = () => {
                                   </FieldArray>
                                 )}
 
-                                <h5 className="font-semibold">Delivery Costs</h5>
+                                <h5 className="font-semibold">
+                                  Delivery Costs
+                                </h5>
                                 <FieldArray
                                   name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds`}
                                 >
@@ -389,7 +418,7 @@ const DeliveryCostForm = () => {
                                         type="button"
                                         className="text-blue-500"
                                         onClick={() =>
-                                          push({ orderValue: '', cost: '' })
+                                          push({ orderValue: "", cost: "" })
                                         }
                                       >
                                         Add Delivery Threshold
@@ -417,7 +446,9 @@ const DeliveryCostForm = () => {
                                   />
                                 </div>
 
-                                <h5 className="font-semibold">Pickup Options</h5>
+                                <h5 className="font-semibold">
+                                  Pickup Options
+                                </h5>
                                 <FieldArray
                                   name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds`}
                                 >
@@ -464,7 +495,7 @@ const DeliveryCostForm = () => {
                                         type="button"
                                         className="text-blue-500"
                                         onClick={() =>
-                                          push({ orderValue: '', cost: '' })
+                                          push({ orderValue: "", cost: "" })
                                         }
                                       >
                                         Add Pickup Threshold
@@ -491,7 +522,6 @@ const DeliveryCostForm = () => {
                                     className="text-red-500 text-sm mt-1"
                                   />
                                 </div>
-
                               </div>
                             ))}
                             <button
@@ -499,21 +529,21 @@ const DeliveryCostForm = () => {
                               className="text-green-500"
                               onClick={() =>
                                 push({
-                                  suburbName: '',
-                                  state: '',
+                                  suburbName: "",
+                                  state: "",
                                   postalCodes: {
-                                    type: '',
-                                    ranges: [{ start: '', end: '' }],
+                                    type: "",
+                                    ranges: [{ start: "", end: "" }],
                                     list: [],
-                                    single: '',
+                                    single: "",
                                   },
                                   delivery_costs: {
-                                    thresholds: [{ orderValue: '', cost: '' }],
-                                    above_threshold: '',
+                                    thresholds: [{ orderValue: "", cost: "" }],
+                                    above_threshold: "",
                                   },
                                   pickup_options: {
-                                    thresholds: [{ orderValue: '', cost: '' }],
-                                    above_threshold: '',
+                                    thresholds: [{ orderValue: "", cost: "" }],
+                                    above_threshold: "",
                                   },
                                 })
                               }
@@ -523,7 +553,6 @@ const DeliveryCostForm = () => {
                           </>
                         )}
                       </FieldArray>
-
                     </div>
                   ))}
                   <button
@@ -531,24 +560,24 @@ const DeliveryCostForm = () => {
                     className="text-green-500"
                     onClick={() =>
                       push({
-                        cityName: '',
+                        cityName: "",
                         suburbs: [
                           {
-                            suburbName: '',
-                            state: '',
+                            suburbName: "",
+                            state: "",
                             postalCodes: {
-                              type: '',
-                              ranges: [{ start: '', end: '' }],
+                              type: "",
+                              ranges: [{ start: "", end: "" }],
                               list: [],
-                              single: '',
+                              single: "",
                             },
                             delivery_costs: {
-                              thresholds: [{ orderValue: '', cost: '' }],
-                              above_threshold: '',
+                              thresholds: [{ orderValue: "", cost: "" }],
+                              above_threshold: "",
                             },
                             pickup_options: {
-                              thresholds: [{ orderValue: '', cost: '' }],
-                              above_threshold: '',
+                              thresholds: [{ orderValue: "", cost: "" }],
+                              above_threshold: "",
                             },
                           },
                         ],
@@ -561,13 +590,10 @@ const DeliveryCostForm = () => {
               )}
             </FieldArray>
 
-            <div className='mt-[10px] flex flex-col sm:flex-row gap-[8px] xl:justify-center xl:items-center'>
-            <Button name={'Submit'} type="submit"  normalBtn/>
-            <Button name={'Cancel'}   link={'/'} secondary/>
+            <div className="mt-[10px] flex flex-col sm:flex-row gap-[8px] xl:justify-center xl:items-center">
+              <Button name={"Submit"} type="submit" normalBtn />
+              <Button name={"Cancel"} link={"/"} secondary />
             </div>
-            
-            
-          
           </Form>
         )}
       </Formik>
