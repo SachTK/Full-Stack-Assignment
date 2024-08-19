@@ -4,8 +4,9 @@ import React from 'react';
 import { Formik, Field, Form, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import Button from './Button';
 
-const MyForm = () => {
+const DeliveryCostForm = () => {
   const initialValues = {
     stateName: '',
     cities: [
@@ -81,9 +82,33 @@ const MyForm = () => {
   });
 
   const handleSubmit = (values) => {
-    console.log('Form submitted', values);
+    const cleanedValues = {
+      ...values,
+      cities: values.cities.map((city) => ({
+        ...city,
+        suburbs: city.suburbs.map((suburb) => {
+          const cleanedPostalCodes = {
+            type: suburb.postalCodes.type,
+          };
+
+          if (suburb.postalCodes.type === 'single') {
+            cleanedPostalCodes.single = suburb.postalCodes.single;
+          } else if (suburb.postalCodes.type === 'range') {
+            cleanedPostalCodes.ranges = suburb.postalCodes.ranges;
+          } else if (suburb.postalCodes.type === 'list') {
+            cleanedPostalCodes.list = suburb.postalCodes.list;
+          }
+
+          return {
+            ...suburb,
+            postalCodes: cleanedPostalCodes,
+          };
+        }),
+      })),
+    };
+
     axios
-      .post('http://localhost:3001/api/states', values)
+      .post('http://localhost:3001/api/states', cleanedValues)
       .then((response) => {
         console.log('Form submitted successfully', response.data);
       })
@@ -93,7 +118,7 @@ const MyForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 max-w-[688px] py-[40px] xl:py-[60px]">
       <h1 className="text-2xl font-bold mb-4">State Information</h1>
       <Formik
         initialValues={initialValues}
@@ -326,12 +351,12 @@ const MyForm = () => {
                                       {suburb.delivery_costs.thresholds.map(
                                         (threshold, index) => (
                                           <div key={index} className="mb-2">
-                                            <div className="flex space-x-2">
+                                            <div className="flex space-x-2 ">
                                               <Field
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.orderValue`}
                                                 type="number"
                                                 placeholder="Order Value"
-                                                className="p-2 border border-gray-300 rounded-md"
+                                                className="p-2 border border-gray-300 rounded-md max-w-[320px] min-w-[163px] w-full"
                                               />
                                               <ErrorMessage
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.orderValue`}
@@ -342,7 +367,7 @@ const MyForm = () => {
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.cost`}
                                                 type="number"
                                                 placeholder="Cost"
-                                                className="p-2 border border-gray-300 rounded-md"
+                                                className="p-2 border border-gray-300 rounded-md  max-w-[320px] min-w-[163px] w-full"
                                               />
                                               <ErrorMessage
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.thresholds.${index}.cost`}
@@ -383,7 +408,7 @@ const MyForm = () => {
                                   <Field
                                     name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.above_threshold`}
                                     type="number"
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md "
                                   />
                                   <ErrorMessage
                                     name={`cities.${cityIndex}.suburbs.${suburbIndex}.delivery_costs.above_threshold`}
@@ -406,7 +431,7 @@ const MyForm = () => {
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.orderValue`}
                                                 type="number"
                                                 placeholder="Order Value"
-                                                className="p-2 border border-gray-300 rounded-md"
+                                                className="p-2 border border-gray-300 rounded-md  max-w-[320px] min-w-[163px] w-full"
                                               />
                                               <ErrorMessage
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.orderValue`}
@@ -417,7 +442,7 @@ const MyForm = () => {
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.cost`}
                                                 type="number"
                                                 placeholder="Cost"
-                                                className="p-2 border border-gray-300 rounded-md"
+                                                className="p-2 border border-gray-300 rounded-md  max-w-[320px] min-w-[163px] w-full"
                                               />
                                               <ErrorMessage
                                                 name={`cities.${cityIndex}.suburbs.${suburbIndex}.pickup_options.thresholds.${index}.cost`}
@@ -536,12 +561,13 @@ const MyForm = () => {
               )}
             </FieldArray>
 
-            <button
-              type="submit"
-              className="mt-4 bg-blue-500 text-white p-2 rounded-md"
-            >
-              Submit
-            </button>
+            <div className='mt-[10px] flex flex-col sm:flex-row gap-[8px] xl:justify-center xl:items-center'>
+            <Button name={'Submit'} type="submit"  normalBtn/>
+            <Button name={'Cancel'}   link={'/'} secondary/>
+            </div>
+            
+            
+          
           </Form>
         )}
       </Formik>
@@ -549,4 +575,4 @@ const MyForm = () => {
   );
 };
 
-export default MyForm;
+export default DeliveryCostForm;
