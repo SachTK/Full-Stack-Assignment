@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const stateController = require('../controller/stateCcontroller');
+const stateController = require('../controller/stateController');
 
 // Route to create a new state
 router.post('/states', stateController.createState);

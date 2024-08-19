@@ -1,30 +1,37 @@
-import Service from "../model/stateModel";
+const State = require("../model/stateModel");
 
-export const addState = async (data) => {
+const addState = async (data) => {
   try {
-    const service = new Service(data);
-    await service.save();
-    return service;
+    const state = new State(data);
+    await state.save();
+    return state;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const getStates = async (query) => {
+const getStates = async (query) => {
   const { page = 1, limit = 10 } = query;
   try {
-    const states = await Service.paginate({}, { page, limit });
+    const states = await State.paginate({}, { page, limit });
     return states;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const getAllDeliveryCosts = async () => {
+const getAllDeliveryCosts = async () => {
   try {
-    const deliveryCosts = await Service.find().lean();
+    const deliveryCosts = await State.find().lean();
     return deliveryCosts;
   } catch (error) {
     throw new Error(error.message);
   }
+};
+
+
+module.exports = {
+  addState,
+  getStates,
+  getAllDeliveryCosts
 };
