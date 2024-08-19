@@ -124,7 +124,7 @@ const DeliveryCostForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-[688px] py-[40px] xl:py-[60px]">
+    <div className="container mx-auto p-4 max-w-[688px] my-[40px] xl:my-[60px] border-[1px] border-gray-300 rounded-md">
       <h1 className="text-2xl font-bold mb-4">State Information</h1>
       <Formik
         initialValues={initialValues}

@@ -22,10 +22,9 @@ const DeliveryCostTabel = () => {
         setError("Could not retrieve delivery costs. Please try again.");
       }
     };
-  
+
     fetchDeliveryCosts();
   }, []);
-  
 
   const handleSearch = () => {
     setError(null);
@@ -132,28 +131,34 @@ const DeliveryCostTabel = () => {
           <tbody>
             {filteredDeliveryCosts.map((state, stateIndex) =>
               state.cities.map((city, cityIndex) =>
-                city.suburbs.map((suburb, suburbIndex) => (
-                  <tr key={`${stateIndex}-${cityIndex}-${suburbIndex}`}>
-                    <td className="px-4 py-2 border-b text-start">
-                      {renderPostalCodes(suburb.postalCodes)}
-                    </td>
-                    <td className="px-4 py-2 border-b text-start">
-                      {suburb.suburbName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-start">
-                      {city.cityName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-start">
-                      {state.stateName}
-                    </td>
-                    <td className="px-4 py-2 border-b text-start">
-                      {suburb.delivery_costs.thresholds[0]?.orderValue} $
-                    </td>
-                    <td className="px-4 py-2 border-b text-start">
-                      {suburb.delivery_costs.thresholds[0]?.cost} $
-                    </td>
-                  </tr>
-                ))
+                city.suburbs.map((suburb, suburbIndex) =>
+                  suburb.delivery_costs.thresholds.map(
+                    (threshold, thresholdIndex) => (
+                      <tr
+                        key={`${stateIndex}-${cityIndex}-${suburbIndex}-${thresholdIndex}`}
+                      >
+                        <td className="px-4 py-2 border-b text-start">
+                          {renderPostalCodes(suburb.postalCodes)}
+                        </td>
+                        <td className="px-4 py-2 border-b text-start">
+                          {suburb.suburbName}
+                        </td>
+                        <td className="px-4 py-2 border-b text-start">
+                          {city.cityName}
+                        </td>
+                        <td className="px-4 py-2 border-b text-start">
+                          {state.stateName}
+                        </td>
+                        <td className="px-4 py-2 border-b text-start">
+                          {threshold.orderValue} $
+                        </td>
+                        <td className="px-4 py-2 border-b text-start">
+                          {threshold.cost} $
+                        </td>
+                      </tr>
+                    )
+                  )
+                )
               )
             )}
           </tbody>
